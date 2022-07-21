@@ -50,6 +50,7 @@ class FlutterMentions extends StatefulWidget {
     this.appendSpaceOnAdd = true,
     this.hideSuggestionList = false,
     this.onSuggestionVisibleChanged,
+    this.showWhenSuggestionEmpty,
   }) : super(key: key);
 
   final bool hideSuggestionList;
@@ -241,6 +242,9 @@ class FlutterMentions extends StatefulWidget {
   /// {@macro flutter.services.autofill.autofillHints}
   final Iterable<String>? autofillHints;
 
+  ///the widget to show when search doesn't return anything`
+  final Widget? showWhenSuggestionEmpty;
+
   @override
   FlutterMentionsState createState() => FlutterMentionsState();
 }
@@ -250,6 +254,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
   ValueNotifier<bool> showSuggestions = ValueNotifier(false);
   LengthMap? _selectedMention;
   String _pattern = '';
+  Widget? _showWhenSuggestionEmpty;
 
   Map<String, Annotation> mapToAnotation() {
     final data = <String, Annotation>{};
@@ -385,6 +390,10 @@ class FlutterMentionsState extends State<FlutterMentions> {
 
     controller!.addListener(inputListeners);
 
+    if (widget.showWhenSuggestionEmpty != null) {
+      _showWhenSuggestionEmpty = widget.showWhenSuggestionEmpty;
+    }
+
     super.initState();
   }
 
@@ -439,6 +448,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
                       addMention(value, list);
                       showSuggestions.value = false;
                     },
+                    showWhenSuggestionEmpty: _showWhenSuggestionEmpty,
                   )
                 : Container();
           },

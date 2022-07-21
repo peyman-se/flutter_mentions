@@ -7,6 +7,7 @@ class OptionList extends StatelessWidget {
     required this.suggestionListHeight,
     this.suggestionBuilder,
     this.suggestionListDecoration,
+    this.showWhenSuggestionEmpty,
   });
 
   final Widget Function(Map<String, dynamic>)? suggestionBuilder;
@@ -19,17 +20,18 @@ class OptionList extends StatelessWidget {
 
   final BoxDecoration? suggestionListDecoration;
 
+  final Widget? showWhenSuggestionEmpty;
+
   @override
   Widget build(BuildContext context) {
-    return data.isNotEmpty
-        ? Container(
+    return Container(
             decoration:
                 suggestionListDecoration ?? BoxDecoration(color: Colors.white),
             constraints: BoxConstraints(
               maxHeight: suggestionListHeight,
               minHeight: 0,
             ),
-            child: ListView.builder(
+            child: data.isNotEmpty ? ListView.builder(
               itemCount: data.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
@@ -49,8 +51,7 @@ class OptionList extends StatelessWidget {
                         ),
                 );
               },
-            ),
-          )
-        : Container();
+            ) : (showWhenSuggestionEmpty ?? Container()),
+          );
   }
 }
