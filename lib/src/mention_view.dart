@@ -51,6 +51,7 @@ class FlutterMentions extends StatefulWidget {
     this.hideSuggestionList = false,
     this.onSuggestionVisibleChanged,
     this.showWhenSuggestionEmpty,
+    this.eraseOnTap,
   }) : super(key: key);
 
   final bool hideSuggestionList;
@@ -244,6 +245,7 @@ class FlutterMentions extends StatefulWidget {
 
   ///the widget to show when search doesn't return anything`
   final Widget? showWhenSuggestionEmpty;
+  final bool? eraseOnTap;
 
   @override
   FlutterMentionsState createState() => FlutterMentionsState();
@@ -255,6 +257,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
   LengthMap? _selectedMention;
   String _pattern = '';
   Widget? _showWhenSuggestionEmpty;
+  late bool _eraseOnTap;
 
   Map<String, Annotation> mapToAnotation() {
     final data = <String, Annotation>{};
@@ -307,14 +310,19 @@ class FlutterMentionsState extends State<FlutterMentions> {
     final _list = widget.mentions
         .firstWhere((element) => selectedMention.str.contains(element.trigger));
 
+    if (widget.onMentionAdd != null) widget.onMentionAdd!(value);
+
+    if (_eraseOnTap) {
+      controller!.text = '';
+      return;
+    }
+
     // find the text by range and replace with the new value.
     controller!.text = controller!.value.text.replaceRange(
       selectedMention.start,
       selectedMention.end,
       "${_list.trigger}${value['display']}${widget.appendSpaceOnAdd ? ' ' : ''}",
     );
-
-    if (widget.onMentionAdd != null) widget.onMentionAdd!(value);
 
     // Move the cursor to next position after the new mentioned item.
     var nextCursorPosition =
@@ -384,6 +392,8 @@ class FlutterMentionsState extends State<FlutterMentions> {
     if (widget.defaultText != null) {
       controller!.text = widget.defaultText!;
     }
+
+    _eraseOnTap = widget.eraseOnTap ?? false;
 
     // setup a listener to figure out which suggestions to show based on the trigger
     controller!.addListener(suggestionListerner);

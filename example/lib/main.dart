@@ -31,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   GlobalKey<FlutterMentionsState> key = GlobalKey<FlutterMentionsState>();
+  List<String> selectedMentions = <String>[];
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          RaisedButton(
+          ElevatedButton(
             child: Text('Get Text'),
             onPressed: () {
               print(key.currentState!.controller!.markupText);
@@ -54,6 +55,13 @@ class _MyHomePageState extends State<MyHomePage> {
               maxLines: 5,
               minLines: 1,
               decoration: InputDecoration(hintText: 'hello'),
+              showWhenSuggestionEmpty: Row(children: [
+                Text("Optionally can be shown when list is empty")
+              ]),
+              onMentionAdd: (value) {
+                selectedMentions.add(value['id']);
+              },
+              eraseOnTap: true,
               mentions: [
                 Mention(
                     trigger: '@',
